@@ -1,0 +1,7 @@
+0.9.0.ub1404lts - November 12, 2015
+
+- All modules converted to LIBERTY from former installer
+  made for Kilo.
+- Fully converted to Identity V3.
+- New options for FLAT networks configuration (neutron
+  install module).
