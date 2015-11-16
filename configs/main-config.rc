@@ -5,8 +5,8 @@
 # E-Mail: TigerLinux@Gmail.com
 #
 # Main Configuration
-# Version: 0.9.0.ub1404lts "Nuclear Lynx"
-# November 12, 2015
+# Version: 0.9.1.ub1404lts "Nuclear Lynx"
+# November 16, 2015
 #
 
 #
@@ -387,14 +387,32 @@ extraneutronhosts=""
 dnsmasq_config_file="/etc/dnsmasq-neutron.conf"
 #
 # If you want our installer to automatically create the neutron FLAT networks, you can
-# use "yes" in network_create and list the networks, space separated, in the create list
+# use "yes" in flat_network_create and list the networks, space separated, in the create list
 # variable.
 # every network item must be in the form: physical-net:logical-net. Physical-net must be
 # in your bridge_mappings above (se the sample: physical01:br-eth2)
 # Sample:
-# network_create_list="physical01:public phisical01:private physical02:external physical02:internal"
+# flat_network_create_list="physical01:public physical01:private physical02:external physical02:internal"
 flat_network_create="yes"
 flat_network_create_list="physical01:public"
+# Also, you need to set up your physical FLAT network names. Sample:
+# flat_networks="physical01,physical02"
+flat_networks="physical01"
+#
+#
+#
+# If you want our installer to automatically create the neutron VLAN networks, you can
+# use "yes" in vlan_network_create and list the networks, space separated, in the create list
+# variable.
+# every network item must be in the form: physical-net:logical-net:vlan_id. Physical-net must be
+# in your bridge_mappings above (se the sample: physical01:br-eth2). The "vlan_id" is your vlan tag.
+# Sample:
+# vlan_network_create_list="physical01:public:16 physical01:private:120 physical02:external:200"
+vlan_network_create="no"
+vlan_network_create_list=""
+# Also, you need to set up your network vlan ranges. Sample:
+# network_vlan_ranges="physical01:1:20,phisical01:20:200,physical02:100:300"
+network_vlan_ranges=""
 #
 # If you want to use VPN As a Service, set the following to "yes"
 vpnaasinstall="no"

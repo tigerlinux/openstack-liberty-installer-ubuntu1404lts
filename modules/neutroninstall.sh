@@ -507,13 +507,15 @@ echo "#" >> /etc/neutron/plugins/ml2/ml2_conf.ini
 crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 type_drivers "local,flat,vlan,gre,vxlan"
 crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 mechanism_drivers "openvswitch,l2population"
 crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 tenant_network_types "flat,vlan,gre,vxlan"
-crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2_type_flat flat_networks "*"
+# crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2_type_flat flat_networks "*"
 crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini securitygroup enable_security_group True
 crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini securitygroup enable_ipset True
 crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini securitygroup firewall_driver neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver
 # crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ovs enable_tunneling False
 crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ovs enable_tunneling True
-crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ovs network_vlan_ranges $network_vlan_ranges
+#crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ovs network_vlan_ranges $network_vlan_ranges
+crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2_type_vlan network_vlan_ranges $network_vlan_ranges
+crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2_type_flat flat_networks $flat_networks
 crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ovs local_ip $neutron_computehost
 crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ovs bridge_mappings $bridge_mappings
 
@@ -525,8 +527,6 @@ crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini agent l2_population True
 crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2_type_vxlan vxlan_group "239.1.1.1"
 crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2_type_vxlan vni_ranges $vni_ranges
 crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2_type_gre tunnel_id_ranges $tunnel_id_ranges
-
-# Added 17-Sept-2015 - ML2 Port Security
 crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 extension_drivers port_security
 
 #
@@ -588,8 +588,8 @@ crudini --set /etc/neutron/metadata_agent.ini DEFAULT metadata_proxy_shared_secr
 crudini --set /etc/neutron/metadata_agent.ini DEFAULT auth_uri "http://$keystonehost:5000"
 crudini --set /etc/neutron/metadata_agent.ini DEFAULT auth_url "http://$keystonehost:35357"
 crudini --set /etc/neutron/metadata_agent.ini DEFAULT auth_plugin password
-crudini --set /etc/neutron/metadata_agent.ini DEFAULT project_domain_id default
-crudini --set /etc/neutron/metadata_agent.ini DEFAULT user_domain_id default
+crudini --set /etc/neutron/metadata_agent.ini DEFAULT project_domain_id $keystonedomain
+crudini --set /etc/neutron/metadata_agent.ini DEFAULT user_domain_id $keystonedomain
 crudini --set /etc/neutron/metadata_agent.ini DEFAULT project_name $keystoneservicestenant
 crudini --set /etc/neutron/metadata_agent.ini DEFAULT username $neutronuser
 crudini --set /etc/neutron/metadata_agent.ini DEFAULT password $neutronpass
@@ -802,15 +802,38 @@ then
 			echo "Creating logical FLAT network $logicalnet on physical network: $physicalnet"
 			neutron net-create $logicalnet \
 				--shared \
-				--provider:segmentation_id=0 \
+				--provider:segmentation_id 0 \
 				--provider:network_type flat \
 				--router:external \
 				--provider:physical_network $physicalnet
 			echo ""
-			echo "Network $logicalnet created on physical net: $physicalnet !"
+			echo "FLAT Network $logicalnet created on physical net: $physicalnet !"
 			echo ""
 		done
 	fi
+        if [ $vlan_network_create == "yes" ]
+        then
+                source $keystone_admin_rc_file
+
+                for MyNet in $vlan_network_create_list
+                do
+                        echo ""
+                        physicalnet=`echo $MyNet|cut -d: -f1`
+                        logicalnet=`echo $MyNet|cut -d: -f2`
+			vlantagnet=`echo $MyNet|cut -d: -f3`
+                        echo "Creating logical VLAN network $logicalnet on physical network: $physicalnet with TAG:$vlantagnet"
+                        neutron net-create $logicalnet \
+                                --shared \
+                                --provider:segmentation_id $vlantagnet \
+                                --provider:network_type vlan \
+                                --router:external \
+                                --provider:physical_network $physicalnet
+                        echo ""
+                        echo "VLAN Network $logicalnet created on physical net: $physicalnet with TAG ID: $vlantagnet !"
+                        echo ""
+                done
+        fi
+
 fi
 
 #
