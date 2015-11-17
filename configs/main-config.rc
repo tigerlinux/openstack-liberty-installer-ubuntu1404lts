@@ -5,8 +5,8 @@
 # E-Mail: TigerLinux@Gmail.com
 #
 # Main Configuration
-# Version: 0.9.1.ub1404lts "Nuclear Lynx"
-# November 16, 2015
+# Version: 0.9.2.ub1404lts "Nuclear Lynx"
+# November 17, 2015
 #
 
 #
@@ -143,13 +143,13 @@ extrakeystonehosts=""
 # Please regenerate the SERVICE_TOKEN value by using the command: "openssl rand -hex 10"
 SERVICE_TOKEN="044cb8c9e4a00a418827"
 #
-# PLEASE PLEASE PLEASE Leave Keystone Options following as they are. Only change
-# the keystoneadminuseremail, keystoneadminpass and keystonedomain
-# Normally, you only need to change here the e-mail domain and the password:
+# PLEASE PLEASE PLEASE Leave Keystone Options following as they are. If you change 
+# the default protected config options, your OpenStack installation will be unusable 
+# 
+# PROTECTED KEYSTONE CONFIG OPTIONS - DO NOT CHANGE !!!
+#
 keystoneadminuser="admin"
 keystoneservicename="keystone"
-keystoneadminuseremail="admin@localhost"
-keystoneadminpass="P@ssw0rd"
 keystoneadmintenant="admin"
 keystoneservicestenant="services"
 keystonememberrole="_member_"
@@ -159,7 +159,12 @@ keystonereselleradminrole="ResellerAdmin"
 keystone_admin_rc_file="/root/keystonerc_admin"
 keystone_fulladmin_rc_file="/root/keystonerc_fulladmin"
 #
-# Change the remaining following options to fit your cloud infraestructure needs
+# END OF PROTECTED KEYSTONE CONFIG OPTIONS 
+# 
+# Change the remaining following options to fit your cloud infraestructure needs 
+#
+keystoneadminuseremail="admin@localhost"
+keystoneadminpass="P@ssw0rd"
 #
 # Token Provider Flavor. Two options: pki or uuid. There is some debate in the community about
 # the right flavor. Currently, it seems to be uuid so this is our default.

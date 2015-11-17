@@ -50,15 +50,16 @@ ALLOWED_HOSTS = '*'
 # NOTE: The version should be formatted as it appears in the URL for the
 # service API. For example, The identity service APIs have inconsistent
 # use of the decimal point, so valid options would be 2.0 or 3.
-#OPENSTACK_API_VERSIONS = {
-#    "data-processing": 1.1,
-#    "identity": 3,
-#    "volume": 2,
-#}
+OPENSTACK_API_VERSIONS = {
+    "data-processing": 1.1,
+    "identity": 3,
+    "volume": 2,
+}
 
 # Set this to True if running on multi-domain model. When this is enabled, it
 # will require user to enter the Domain name in addition to username for login.
 #OPENSTACK_KEYSTONE_MULTIDOMAIN_SUPPORT = False
+OPENSTACK_KEYSTONE_MULTIDOMAIN_SUPPORT = True
 
 # Overrides the default domain used when running on single-domain model
 # with Keystone V3. All entities will be created in the default domain.
@@ -141,7 +142,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 #OPENSTACK_HOST = "127.0.0.1"
 OPENSTACK_HOST = "CUSTOM_DASHBOARD_keystonehost"
-OPENSTACK_KEYSTONE_URL = "http://%s:5000/v2.0" % OPENSTACK_HOST
+#OPENSTACK_KEYSTONE_URL = "http://%s:5000/v2.0" % OPENSTACK_HOST
+OPENSTACK_KEYSTONE_URL = "http://%s:5000/v3" % OPENSTACK_HOST
 #OPENSTACK_KEYSTONE_DEFAULT_ROLE = "_member_"
 OPENSTACK_KEYSTONE_DEFAULT_ROLE = "OSINSTALLER_KEYSTONE_MEMBER"
 

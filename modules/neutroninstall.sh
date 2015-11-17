@@ -275,7 +275,8 @@ crudini --set /etc/neutron/neutron.conf DEFAULT control_exchange neutron
 crudini --set /etc/neutron/neutron.conf DEFAULT default_notification_level INFO
 crudini --set /etc/neutron/neutron.conf DEFAULT notification_topics notifications
 crudini --set /etc/neutron/neutron.conf DEFAULT state_path /var/lib/neutron
-crudini --set /etc/neutron/neutron.conf DEFAULT lock_path /var/lib/neutron/lock
+#crudini --set /etc/neutron/neutron.conf DEFAULT lock_path /var/lib/neutron/lock
+crudini --set /etc/neutron/neutron.conf oslo_concurrency lock_path /var/lib/neutron/lock
 if [ $neutron_in_compute_node == "no" ]
 then
         crudini --set /etc/neutron/neutron.conf DEFAULT router_distributed True

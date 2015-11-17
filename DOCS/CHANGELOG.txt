@@ -1,3 +1,9 @@
+0.9.2.ub1404lts - November 17, 2015
+
+- Added Keystone V3 support to Horizon.
+- Corrected some config items in neutron module.
+- Included some ALERTS in the main config file.
+
 0.9.1.ub1404lts - November 16, 2015
 
 - Corrected some missing config items in neutron module.
