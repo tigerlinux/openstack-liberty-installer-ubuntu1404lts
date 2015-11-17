@@ -5,7 +5,7 @@
 # E-Mail: TigerLinux@Gmail.com
 #
 # Main Installer Script
-# Version: 0.9.2.ub1404lts "Nuclear Lynx"
+# Version: 0.9.3.ub1404lts "Nuclear Lynx"
 # November 17, 2015
 #
 
@@ -72,7 +72,7 @@ case $1 in
 	echo "Flavor: OpenStack LIBERTY for Ubuntu 14.04lts"
 	echo "Made by: Reynaldo R. Martinez P."
 	echo "E-Mail: TigerLinux@Gmail.com"
-	echo "Version 0.9.2.ub1404lts \"Nuclear Lynx\" - November 17, 2015"
+	echo "Version 0.9.3.ub1404lts \"Nuclear Lynx\" - November 17, 2015"
 	echo ""
 	echo "I'll verify all requiremens"
 	echo "If any requirement is not met, I'll stop and inform what's missing"

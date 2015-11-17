@@ -1,3 +1,10 @@
+0.9.3.ub1404lts - Novembre 17, 2015
+
+- Added ALERT-AND-BUGS documentation to the installer
+  regarding Domains usage with keystone V3 and some
+  OpenStack bugs with postgres affecting cinder and
+  trove.
+
 0.9.2.ub1404lts - November 17, 2015
 
 - Added Keystone V3 support to Horizon.

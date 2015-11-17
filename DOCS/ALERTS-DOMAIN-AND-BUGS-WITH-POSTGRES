@@ -1,0 +1,13 @@
+Please take the following points into consideration:
+
+1.- We are using Identities V3. That means, the WEB Dashboard (Horizon)
+    will ask you the "domain" along username and password. The default
+    domain is "Default" (with capital "D"). If you are using MySQL/Mariadb
+    as database backend, you will be able to use "default" or "Default",
+    but, with postgres, you "NEED" to put "Default" with the capital "D".
+
+2.- If you use postgres as your database backend, you will encounter some
+    nasty bugs with cinder and trove, specially afecting some nova and
+    trove-backup functions. The bug is already reported to openstack
+    maintainers and we just need to wait until it's fixed. Meanwhile, if
+    you can, please try to use MySQL/MariaDB as database backend.
