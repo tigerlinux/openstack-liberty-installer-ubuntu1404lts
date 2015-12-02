@@ -7,7 +7,35 @@ Please take the following points into consideration:
     but, with postgres, you "NEED" to put "Default" with the capital "D".
 
 2.- If you use postgres as your database backend, you will encounter some
-    nasty bugs with cinder and trove, specially afecting some nova and
+    nasty bugs with cinder and trove (only affecting the operations trough
+    the dashboard, not the cli), causing some failures in nova and
     trove-backup functions. The bug is already reported to openstack
     maintainers and we just need to wait until it's fixed. Meanwhile, if
-    you can, please try to use MySQL/MariaDB as database backend.
+    you can, please try to use MySQL/MariaDB as database backend, or, read
+    bellow for a temporary patch:
+
+NOTE: The bug is reported in the following links:
+
+https://bugs.launchpad.net/cinder/+bug/1452888
+https://review.openstack.org/#/c/245662/
+
+Meanwhile "upstream" solve it, you can apply a "temporal" patch by using the
+following command where your "horizon" dashboard is installed:
+
+
+Liberty in Ubuntu 14.04:
+
+sed -r -i "s/bootable=1/bootable=\'true\'/g" \
+/usr/share/openstack-dashboard/openstack_dashboard/dashboards/project/instances/workflows/create_instance.py
+/etc/init.d/apache2 restart
+
+
+Liberty in Centos 7:
+
+sed -r -i "s/bootable=1/bootable=\'true\'/g" \
+/usr/share/openstack-dashboard/openstack_dashboard/dashboards/project/instances/workflows/create_instance.py
+systemctl restart httpd
+
+Again, this only affects operations trough Horizon when Postgres is selected as
+a database backend. Operations trough the openstack "cli" should be safe.
+

@@ -1,4 +1,15 @@
-0.9.3.ub1404lts - Novembre 17, 2015
+1.0.0.ub1404lts - December 02, 2015
+
+- First "ready for production" release.
+- Completed "ALERT-AND-BUGS" documentation with
+  some possible manual fixes for BUG affecting
+  horizon operations when PostgreSQL is selected
+  as database backend.
+- Added extra documentation if "openstack-vlans.txt"
+  file regarding new ways to configure interfaces
+  for openvswitch in Ubuntu/Debian.
+
+0.9.3.ub1404lts - November 17, 2015
 
 - Added ALERT-AND-BUGS documentation to the installer
   regarding Domains usage with keystone V3 and some
