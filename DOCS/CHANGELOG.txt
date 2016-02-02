@@ -1,3 +1,19 @@
+1.0.1.ub1404lts - February 01, 2016
+
+- Minor corrections on main readme (typos).
+- Deleted duplicated entry in main config, for
+  "neutron" configuration.
+- Added extra checks in uninstall module.
+- Added extra information regarding "bootable=1"
+  bug in Horizon. See file:
+  "ALERTS-DOMAIN-AND-BUGS-WITH-POSTGRES"
+- New feature (developed by Ender Mujica from
+  OpenStackVE Community): dhcp agent redundancy
+  configurable on installer (see main config,
+  "neutron" section) - Tksss U very much Ender !.
+  With this new feature, we can activate extra
+  dhcp agents on compute nodes.
+
 1.0.0.ub1404lts - December 02, 2015
 
 - First "ready for production" release.

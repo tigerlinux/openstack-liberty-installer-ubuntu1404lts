@@ -232,11 +232,9 @@ rm -f /var/log/openstack-install.log
 rm -fr /var/lib/openstack-dashboard
 
 
-
-
-
 rm -f /root/keystonerc_admin
 rm -f /root/ks_admin_token
+rm -f /root/keystonerc_fulladmin
 
 rm -f /usr/local/bin/openstack-control.sh
 rm -f /usr/local/bin/openstack-log-cleaner.sh
@@ -248,6 +246,8 @@ rm -rf /var/www/cgi-bin/keystone
 rm -f /etc/apache2/sites-enabled/wsgi-keystone.conf
 rm -f /etc/apache2/sites-available/wsgi-keystone.conf
 rm -f /etc/libvirt/qemu/$instance_name_template*.xml
+
+restart cron
 
 #
 # Restore original snmpd configuration

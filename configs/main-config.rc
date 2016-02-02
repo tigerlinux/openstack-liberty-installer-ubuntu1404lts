@@ -5,8 +5,8 @@
 # E-Mail: TigerLinux@Gmail.com
 #
 # Main Configuration
-# Version: 1.0.0.ub1404lts "Nuclear Lynx"
-# December 02, 2015
+# Version: 1.0.1.ub1404lts "Nuclear Lynx"
+# February 01, 2016
 #
 
 #
@@ -354,12 +354,11 @@ neutronsvce="neutron"
 neutronpass="P@ssw0rd"
 neutronemail="neutron@localhost"
 # This is the most important part of your network configuration. Here, you must
-# select your vlan ranges and mappings. Please, ensure you understand OpenStack
+# select your network mappings. Please, ensure you understand OpenStack
 # network philosophy before you configure this.
 # Our defaults assumes a flat network configuration with external routers connected
-# to an openvswitch br-eth2 switch. Change those defaults or your system
-# will not have a viable network service.
-network_vlan_ranges="public"
+# to an openvswitch br-eth2 switch. Change those defaults to suit your network or your
+# system will not have a viable network service.
 integration_bridge="br-int"
 bridge_mappings="physical01:br-eth2"
 dhcp_domain="localdomain"
@@ -390,6 +389,16 @@ extraneutronhosts=""
 # We use a customized configuration file for dnsmasq (the OpenStack DHCP Service). See
 # our readme in order to understand what you can do with this file.
 dnsmasq_config_file="/etc/dnsmasq-neutron.conf"
+#
+# Neutron DHCP Agent redundancy:
+# By default, we only install a single dhcp-agent in the controller/neutron-server. If
+# you want, you can install an additional dhcp_agent in a compute node. If you want to
+# install an extra dhcp agent and this config file belongs to a compute node, please
+# change "dhcp_agents_in_compute_node" to "yes" and "dhcp_agents_per_network" to "2".
+# If you don't want or don't need such redundancy, leave the following two lines as they
+# are (no and 1 respectivelly).
+dhcp_agents_in_compute_node="no"
+dhcp_agents_per_network="1"
 #
 # If you want our installer to automatically create the neutron FLAT networks, you can
 # use "yes" in flat_network_create and list the networks, space separated, in the create list

@@ -398,7 +398,7 @@ vgcreate cinder-volumes /dev/sda3
 
 ### Swift:
 
-If you are going to use swift, remember to have the disk/partition to be used for swift mounted on a specific directory that also should be indicated in the Installer main confirutarion file (main-config.rc).
+If you are going to use swift, remember to have the disk/partition to be used for swift mounted on a specific directory that also should be indicated in the Installer main configuration file (main-config.rc).
 
 example:
 
@@ -504,9 +504,5 @@ If your system has multiple nodes (controller / compute) use the
 
 In the * Goodies * directory you will find some scripts (each with their respective readme). You can use with those scripts as you see fit with your OpenStack installation. View the scripts and their respective "readme files" to better understand how to use them!.
 
-
-### End notes
-
-This installer is originally configured to use Neutron FLAT existing networks but can be easily modified by you before or even after install in order to use GRE. As a matter of facts, the author of this tool had used it before to create large VLAN based OpenStack installations with multiple VLAN's.
 
 ### END.-

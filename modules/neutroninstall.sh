@@ -89,6 +89,10 @@ then
 		neutron-l3-agent \
 		neutron-metadata-agent \
 		ipset
+	if [ $dhcp_agents_in_compute_node == "yes" ]
+	then
+		DEBIAN_FRONTEND=noninteractive aptitude -y install neutron-dhcp-agent
+	fi
 else
 	echo "Installing haproxy"
 	DEBIAN_FRONTEND=noninteractive aptitude -y install haproxy
@@ -147,6 +151,10 @@ if [ $neutron_in_compute_node == "yes" ]
 then
 	stop neutron-plugin-openvswitch-agent > /dev/null 2>&1
 	stop neutron-plugin-openvswitch-agent > /dev/null 2>&1
+	if [ $dhcp_agents_in_compute_node == "yes" ]
+	then
+		DEBIAN_FRONTEND=noninteractive aptitude -y install neutron-dhcp-agent
+	fi
 else
 	stop neutron-plugin-openvswitch-agent > /dev/null 2>&1
 	stop neutron-plugin-openvswitch-agent > /dev/null 2>&1
@@ -194,7 +202,7 @@ sync
 #
 
 
-if [ $neutron_in_compute_node == "no" ]
+if [ $neutron_in_compute_node == "no" ] || [ $dhcp_agents_in_compute_node == "yes" ]
 then
 	echo ""
 	echo "Configuring DNSMASQ"
@@ -349,7 +357,15 @@ crudini --del /etc/neutron/neutron.conf keystone_authtoken admin_user
 crudini --del /etc/neutron/neutron.conf keystone_authtoken admin_password
  
 crudini --set /etc/neutron/neutron.conf DEFAULT agent_down_time 60
-crudini --set /etc/neutron/neutron.conf DEFAULT dhcp_agents_per_network 1
+# crudini --set /etc/neutron/neutron.conf DEFAULT dhcp_agents_per_network 1
+
+if [ $dhcp_agents_in_compute_node == "yes" ]
+then
+	crudini --set /etc/neutron/neutron.conf DEFAULT dhcp_agents_per_network $dhcp_agents_per_network
+else
+	crudini --set /etc/neutron/neutron.conf DEFAULT dhcp_agents_per_network 1
+fi
+
 crudini --set /etc/neutron/neutron.conf DEFAULT dhcp_agent_notification True
  
  
@@ -744,6 +760,13 @@ then
 	start neutron-plugin-openvswitch-agent
 	start neutron-l3-agent
 	start neutron-metadata-agent
+
+	if [ $dhcp_agents_in_compute_node == "yes" ]
+	then
+		rm -f /etc/init/neutron-dhcp-agent.override
+		start neutron-dhcp-agent
+	fi
+
 else
 	start neutron-server
 
@@ -876,6 +899,11 @@ else
 		if [ $neutronmetering == "yes" ]
 		then
 			date > /etc/openstack-control-script-config/neutron-full-installed-metering
+		fi
+	else
+		if [ $dhcp_agents_in_compute_node == "yes" ]
+		then
+			date > /etc/openstack-control-script-config/neutron-installed-dhcp-agent
 		fi
 	fi
 fi
