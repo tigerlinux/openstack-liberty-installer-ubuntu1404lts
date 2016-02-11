@@ -488,8 +488,8 @@ crudini --set /etc/neutron/dhcp_agent.ini DEFAULT ovs_integration_bridge $integr
 crudini --set /etc/neutron/dhcp_agent.ini DEFAULT use_namespaces True
 crudini --set /etc/neutron/dhcp_agent.ini DEFAULT state_path /var/lib/neutron
 crudini --set /etc/neutron/dhcp_agent.ini DEFAULT dnsmasq_config_file $dnsmasq_config_file
-# crudini --set /etc/neutron/dhcp_agent.ini DEFAULT dhcp_domain $dhcp_domain
-crudini --set /etc/neutron/dhcp_agent.ini DEFAULT dns_domain $dhcp_domain
+crudini --set /etc/neutron/dhcp_agent.ini DEFAULT dhcp_domain $dhcp_domain
+crudini --set /etc/neutron/neutron.conf DEFAULT dns_domain $dhcp_domain
 crudini --set /etc/neutron/dhcp_agent.ini DEFAULT dhcp_delete_namespaces True
 crudini --set /etc/neutron/dhcp_agent.ini DEFAULT root_helper "sudo neutron-rootwrap /etc/neutron/rootwrap.conf"
 crudini --set /etc/neutron/dhcp_agent.ini DEFAULT enable_isolated_metadata True

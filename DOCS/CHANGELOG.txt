@@ -1,3 +1,11 @@
+1.0.2.ub1404lts - February 10, 2016
+
+- BUG corrected in cinder module. We had an
+  incorrect option for glusterfs backend.
+- BUG corrected in neutron module. The dns_domain
+  option was wrongly placed into dhcp agent. The
+  option is now where it should be (in neutron.conf)
+
 1.0.1.ub1404lts - February 01, 2016
 
 - Minor corrections on main readme (typos).

@@ -175,7 +175,9 @@ then
 	crudini --set /etc/cinder/cinder.conf glusterfs volume_driver "cinder.volume.drivers.glusterfs.GlusterfsDriver"
 	crudini --set /etc/cinder/cinder.conf glusterfs glusterfs_shares_config "/etc/cinder/glusterfs_shares"
 	crudini --set /etc/cinder/cinder.conf glusterfs glusterfs_mount_point_base "/var/lib/cinder/glusterfs"
-	crudini --set /etc/cinder/cinder.conf glusterfs glusterfs_sparsed_volumes True
+	# Deprecated !!
+	# crudini --set /etc/cinder/cinder.conf glusterfs glusterfs_sparsed_volumes True
+	crudini --set /etc/cinder/cinder.conf glusterfs nas_volume_prov_type thin
 	crudini --set /etc/cinder/cinder.conf glusterfs glusterfs_disk_util df
 	crudini --set /etc/cinder/cinder.conf glusterfs glusterfs_qcow2_volumes True
 	crudini --set /etc/cinder/cinder.conf glusterfs volume_backend_name GLUSTERFS
