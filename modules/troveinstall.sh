@@ -104,6 +104,7 @@ cat ./libs/trove/api-paste.ini > /etc/trove/api-paste.ini
 cat ./libs/trove/trove.conf > /etc/trove/trove.conf
 cat ./libs/trove/trove-taskmanager.conf > /etc/trove/trove-taskmanager.conf
 cat ./libs/trove/trove-conductor.conf > /etc/trove/trove-conductor.conf
+cat ./libs/trove/trove-guestagent.conf > /etc/trove/trove-guestagent.conf
  
 commonfile='
 	/etc/trove/trove.conf
@@ -119,9 +120,11 @@ do
 	case $dbflavor in
 	"mysql")
 		crudini --set $myconffile database connection mysql+pymysql://$trovedbuser:$trovedbpass@$dbbackendhost:$mysqldbport/$trovedbname
+		crudini --set $myconffile database idle_timeout 3600
 		;;
 	"postgres")
 		crudini --set $myconffile database connection postgresql+psycopg2://$trovedbuser:$trovedbpass@$dbbackendhost:$psqldbport/$trovedbname
+		crudini --set $myconffile database idle_timeout 3600
 	;;
 	esac
  
@@ -138,6 +141,7 @@ do
 	case $brokerflavor in
 	"qpid")
 		crudini --set $myconffile DEFAULT rpc_backend trove.openstack.common.rpc.impl_qpid
+		crudini --del $myconffile DEFAULT rabbit_password
 		crudini --set $myconffile oslo_messaging_qpid qpid_hostname $messagebrokerhost
 		crudini --set $myconffile oslo_messaging_qpid qpid_port 5672
 		crudini --set $myconffile oslo_messaging_qpid qpid_username $brokeruser
@@ -148,6 +152,7 @@ do
 		;;
 	"rabbitmq")
 		crudini --set $myconffile DEFAULT rpc_backend trove.openstack.common.rpc.impl_kombu
+		crudini --set $myconffile DEFAULT rabbit_password $brokerpass
 		crudini --set $myconffile oslo_messaging_rabbit rabbit_host $messagebrokerhost
 		crudini --set $myconffile oslo_messaging_rabbit rabbit_password $brokerpass
 		crudini --set $myconffile oslo_messaging_rabbit rabbit_userid $brokeruser
@@ -160,24 +165,132 @@ do
 	;;
 	esac
 done
- 
- 
+
 crudini --set /etc/trove/trove-taskmanager.conf DEFAULT nova_proxy_admin_user $keystoneadminuser
 crudini --set /etc/trove/trove-taskmanager.conf DEFAULT nova_proxy_admin_pass $keystoneadminpass
 crudini --set /etc/trove/trove-taskmanager.conf DEFAULT nova_proxy_admin_tenant_name $keystoneadmintenant
 
-#
-# We set our default datastore by using our database flavor selected into our main config file
-#
- 
-case $dbflavor in
-"mysql")
-	crudini --set /etc/trove/trove.conf DEFAULT default_datastore mysql
-	;;
-"postgres")
-	crudini --set /etc/trove/trove.conf DEFAULT default_datastore postgresql
-	;;
-esac
+crudini --set /etc/trove/trove.conf DEFAULT nova_proxy_admin_user $keystoneadminuser
+crudini --set /etc/trove/trove.conf DEFAULT nova_proxy_admin_pass $keystoneadminpass
+crudini --set /etc/trove/trove.conf DEFAULT nova_proxy_admin_tenant_name $keystoneadmintenant
+
+crudini --set /etc/trove/trove.conf DEFAULT taskmanager_queue taskmanager
+crudini --set /etc/trove/trove.conf DEFAULT admin_roles $keystoneadminuser
+crudini --set /etc/trove/trove.conf DEFAULT os_region_name $endpointsregion
+
+crudini --set /etc/trove/trove.conf DEFAULT nova_compute_service_type compute
+crudini --set /etc/trove/trove.conf DEFAULT cinder_service_type volumev2
+crudini --set /etc/trove/trove.conf DEFAULT swift_service_type object-store
+crudini --set /etc/trove/trove.conf DEFAULT heat_service_type orchestration
+crudini --set /etc/trove/trove.conf DEFAULT neutron_service_type network
+
+# Failsafe #1
+crudini --del /etc/trove/trove.conf DEFAULT nova_compute_url
+crudini --del /etc/trove/trove.conf DEFAULT cinder_url
+crudini --del /etc/trove/trove.conf DEFAULT swift_url
+crudini --del /etc/trove/trove.conf DEFAULT trove_auth_url
+# Failsafe #2
+crudini --del /etc/trove/trove.conf DEFAULT nova_compute_url
+crudini --del /etc/trove/trove.conf DEFAULT cinder_url
+crudini --del /etc/trove/trove.conf DEFAULT swift_url
+crudini --del /etc/trove/trove.conf DEFAULT trove_auth_url
+
+crudini --set /etc/trove/trove-conductor.conf DEFAULT nova_proxy_admin_user $keystoneadminuser
+crudini --set /etc/trove/trove-conductor.conf DEFAULT nova_proxy_admin_pass $keystoneadminpass
+crudini --set /etc/trove/trove-conductor.conf DEFAULT nova_proxy_admin_tenant_name $keystoneadmintenant
+
+# Failsafe #1
+crudini --del /etc/trove/trove-conductor.conf DEFAULT nova_compute_url
+crudini --del /etc/trove/trove-conductor.conf DEFAULT cinder_url
+crudini --del /etc/trove/trove-conductor.conf DEFAULT swift_url
+
+# Failsafe #2
+crudini --del /etc/trove/trove-conductor.conf DEFAULT nova_compute_url
+crudini --del /etc/trove/trove-conductor.conf DEFAULT cinder_url
+crudini --del /etc/trove/trove-conductor.conf DEFAULT swift_url
+
+crudini --set /etc/trove/trove-taskmanager.conf DEFAULT nova_proxy_admin_user $keystoneadminuser
+crudini --set /etc/trove/trove-taskmanager.conf DEFAULT nova_proxy_admin_pass $keystoneadminpass
+crudini --set /etc/trove/trove-taskmanager.conf DEFAULT nova_proxy_admin_tenant_name $keystoneadmintenant
+
+crudini --set /etc/trove/trove-taskmanager.conf DEFAULT taskmanager_queue taskmanager
+
+crudini --set /etc/trove/trove-taskmanager.conf DEFAULT notification_driver messagingv2
+
+crudini --set /etc/trove/trove-taskmanager.conf DEFAULT guest_config "/etc/trove/trove-guestagent.conf"
+crudini --set /etc/trove/trove-taskmanager.conf DEFAULT guest_info "/etc/trove/guest_info"
+crudini --set /etc/trove/trove-taskmanager.conf DEFAULT injected_config_location "/etc/trove/"
+crudini --set /etc/trove/trove-taskmanager.conf DEFAULT cloudinit_location "/etc/trove/cloudinit"
+
+crudini --set /etc/trove/trove-taskmanager.conf DEFAULT os_region_name $endpointsregion
+
+crudini --set /etc/trove/trove-taskmanager.conf DEFAULT nova_compute_service_type compute
+crudini --set /etc/trove/trove-taskmanager.conf DEFAULT cinder_service_type volumev2
+crudini --set /etc/trove/trove-taskmanager.conf DEFAULT swift_service_type object-store
+crudini --set /etc/trove/trove-taskmanager.conf DEFAULT heat_service_type orchestration
+crudini --set /etc/trove/trove-taskmanager.conf DEFAULT neutron_service_type network
+
+if [ $trovevolsupport == "yes" ]
+then
+	crudini --set /etc/trove/trove.conf DEFAULT trove_volume_support True
+	crudini --set /etc/trove/trove.conf DEFAULT block_device_mapping $trovevoldevice
+	crudini --set /etc/trove/trove.conf DEFAULT device_path "/dev/$trovevoldevice"
+	crudini --set /etc/trove/trove.conf mysql volume_support True
+	crudini --set /etc/trove/trove.conf cassandra volume_support True
+	crudini --set /etc/trove/trove.conf cassandra device_path "/dev/$trovevoldevice"
+	crudini --set /etc/trove/trove.conf couchbase volume_support True
+	crudini --set /etc/trove/trove.conf couchbase device_path "/dev/$trovevoldevice"
+	crudini --set /etc/trove/trove.conf mongodb volume_support True
+	crudini --set /etc/trove/trove.conf mongodb device_path "/dev/$trovevoldevice"
+	crudini --set /etc/trove/trove.conf vertica volume_support True
+	crudini --set /etc/trove/trove.conf vertica device_path "/dev/$trovevoldevice"
+else
+	crudini --set /etc/trove/trove.conf DEFAULT trove_volume_support False
+	crudini --set /etc/trove/trove.conf DEFAULT block_device_mapping $trovevoldevice
+	crudini --set /etc/trove/trove.conf DEFAULT device_path "/dev/$trovevoldevice"
+	crudini --set /etc/trove/trove.conf mysql volume_support False
+	crudini --set /etc/trove/trove.conf cassandra volume_support False
+	crudini --set /etc/trove/trove.conf cassandra device_path "/dev/$trovevoldevice"
+	crudini --set /etc/trove/trove.conf couchbase volume_support False
+	crudini --set /etc/trove/trove.conf couchbase device_path "/dev/$trovevoldevice"
+	crudini --set /etc/trove/trove.conf mongodb volume_support False
+	crudini --set /etc/trove/trove.conf mongodb device_path "/dev/$trovevoldevice"
+	crudini --set /etc/trove/trove.conf vertica volume_support False
+	crudini --set /etc/trove/trove.conf vertica device_path "/dev/$trovevoldevice"
+fi
+
+if [ $trovevolsupport == "yes" ]
+then
+	crudini --set /etc/trove/trove-taskmanager.conf DEFAULT trove_volume_support True
+	crudini --set /etc/trove/trove-taskmanager.conf DEFAULT block_device_mapping $trovevoldevice
+	crudini --set /etc/trove/trove-taskmanager.conf DEFAULT device_path "/dev/$trovevoldevice"
+	crudini --set /etc/trove/trove-taskmanager.conf mysql volume_support True
+	crudini --set /etc/trove/trove-taskmanager.conf cassandra volume_support True
+	crudini --set /etc/trove/trove-taskmanager.conf cassandra device_path "/dev/$trovevoldevice"
+	crudini --set /etc/trove/trove-taskmanager.conf couchbase volume_support True
+	crudini --set /etc/trove/trove-taskmanager.conf couchbase device_path "/dev/$trovevoldevice"
+	crudini --set /etc/trove/trove-taskmanager.conf mongodb volume_support True
+	crudini --set /etc/trove/trove-taskmanager.conf mongodb device_path "/dev/$trovevoldevice"
+	crudini --set /etc/trove/trove-taskmanager.conf vertica volume_support True
+	crudini --set /etc/trove/trove-taskmanager.conf vertica device_path "/dev/$trovevoldevice"
+else
+	crudini --set /etc/trove/trove-taskmanager.conf DEFAULT trove_volume_support False
+	crudini --set /etc/trove/trove-taskmanager.conf DEFAULT block_device_mapping $trovevoldevice
+	crudini --set /etc/trove/trove-taskmanager.conf DEFAULT device_path "/dev/$trovevoldevice"
+	crudini --set /etc/trove/trove-taskmanager.conf mysql volume_support False
+	crudini --set /etc/trove/trove-taskmanager.conf cassandra volume_support False
+	crudini --set /etc/trove/trove-taskmanager.conf cassandra device_path "/dev/$trovevoldevice"
+	crudini --set /etc/trove/trove-taskmanager.conf couchbase volume_support False
+	crudini --set /etc/trove/trove-taskmanager.conf couchbase device_path "/dev/$trovevoldevice"
+	crudini --set /etc/trove/trove-taskmanager.conf mongodb volume_support False
+	crudini --set /etc/trove/trove-taskmanager.conf mongodb device_path "/dev/$trovevoldevice"
+	crudini --set /etc/trove/trove-taskmanager.conf vertica volume_support False
+	crudini --set /etc/trove/trove-taskmanager.conf vertica device_path "/dev/$trovevoldevice"
+fi
+
+crudini --set /etc/trove/trove.conf DEFAULT notification_driver messagingv2
+
+crudini --set /etc/trove/trove.conf DEFAULT default_datastore $trovedefaultds
 
 crudini --set /etc/trove/trove.conf DEFAULT add_addresses True
 crudini --set /etc/trove/trove.conf DEFAULT network_label_regex "^NETWORK_LABEL$"
@@ -199,9 +312,33 @@ crudini --set /etc/trove/trove.conf keystone_authtoken user_domain_id $keystoned
 crudini --set /etc/trove/trove.conf keystone_authtoken project_name $keystoneservicestenant
 crudini --set /etc/trove/trove.conf keystone_authtoken username $troveuser
 crudini --set /etc/trove/trove.conf keystone_authtoken password $trovepass
+crudini --set /etc/trove/trove.conf keystone_authtoken auth_host $keystonehost
+crudini --set /etc/trove/trove.conf keystone_authtoken auth_port 35357
+crudini --set /etc/trove/trove.conf keystone_authtoken auth_protocol http
+crudini --set /etc/trove/trove.conf keystone_authtoken admin_tenant_name $keystoneservicestenant
+crudini --set /etc/trove/trove.conf keystone_authtoken admin_user $troveuser
+crudini --set /etc/trove/trove.conf keystone_authtoken admin_password $trovepass
+
+crudini --set /etc/trove/trove-taskmanager.conf keystone_authtoken signing_dir /var/cache/trove
+crudini --set /etc/trove/trove-taskmanager.conf keystone_authtoken auth_uri http://$keystonehost:5000
+crudini --set /etc/trove/trove-taskmanager.conf keystone_authtoken auth_url http://$keystonehost:35357
+crudini --set /etc/trove/trove-taskmanager.conf keystone_authtoken auth_plugin password
+crudini --set /etc/trove/trove-taskmanager.conf keystone_authtoken project_domain_id $keystonedomain
+crudini --set /etc/trove/trove-taskmanager.conf keystone_authtoken user_domain_id $keystonedomain
+crudini --set /etc/trove/trove-taskmanager.conf keystone_authtoken project_name $keystoneservicestenant
+crudini --set /etc/trove/trove-taskmanager.conf keystone_authtoken username $troveuser
+crudini --set /etc/trove/trove-taskmanager.conf keystone_authtoken password $trovepass
+crudini --set /etc/trove/trove-taskmanager.conf keystone_authtoken auth_host $keystonehost
+crudini --set /etc/trove/trove-taskmanager.conf keystone_authtoken auth_port 35357
+crudini --set /etc/trove/trove-taskmanager.conf keystone_authtoken auth_protocol http
+crudini --set /etc/trove/trove-taskmanager.conf keystone_authtoken admin_tenant_name $keystoneservicestenant
+crudini --set /etc/trove/trove-taskmanager.conf keystone_authtoken admin_user $troveuser
+crudini --set /etc/trove/trove-taskmanager.conf keystone_authtoken admin_password $trovepass
 
 
 mkdir -p /var/cache/trove
+mkdir -p /etc/trove/cloudinit
+mkdir -p /etc/trove/templates
 chown -R trove.trove /var/cache/trove
 chown trove.trove /etc/trove/*
 chmod 700 /var/cache/trove
@@ -225,23 +362,14 @@ echo ""
 su -s /bin/sh -c "trove-manage db_sync" trove
 
 #
-# And we create the datastore
+# And we create the default datastore
 #
 
-case $dbflavor in
-"mysql")
-	echo ""
-	echo "Creating Trove MYSQL Datastore"
-	echo ""
-	su -s /bin/sh -c "trove-manage datastore_update mysql ''" trove
-	;;
-"postgres")
-	echo ""
-	echo "Creating Trove POSTGRESQL Datastore"
-	echo ""
-	su -s /bin/sh -c "trove-manage datastore_update postgresql ''" trove
-	;;
-esac
+echo ""
+echo "Creating Trove $trovedefaultds Datastore"
+echo ""
+
+su -s /bin/sh -c "trove-manage datastore_update $trovedefaultds ''" trove
 
 echo ""
 echo "Done"
@@ -291,6 +419,76 @@ else
         date > /etc/openstack-control-script-config/trove-installed
         date > /etc/openstack-control-script-config/trove
 fi
+
+echo ""
+echo "Creating sample trove-guestagent file: /etc/trove/trove-guestagent.conf"
+echo ""
+
+crudini --set /etc/trove/trove-guestagent.conf DEFAULT verbose False
+crudini --set /etc/trove/trove-guestagent.conf DEFAULT debug False
+crudini --set /etc/trove/trove-guestagent.conf DEFAULT datastore_manager $trovedefaultds
+crudini --set /etc/trove/trove-guestagent.conf DEFAULT control_exchange trove
+crudini --set /etc/trove/trove-guestagent.conf DEFAULT nova_proxy_admin_user $keystoneadminuser
+crudini --set /etc/trove/trove-guestagent.conf DEFAULT nova_proxy_admin_pass $keystoneadminpass
+crudini --set /etc/trove/trove-guestagent.conf DEFAULT nova_proxy_admin_tenant_name $keystoneadmintenant
+crudini --set /etc/trove/trove-guestagent.conf DEFAULT trove_auth_url http://$keystonehost:35357/v2.0
+crudini --set /etc/trove/trove-guestagent.conf DEFAULT log_dir "/var/log/trove/"
+crudini --set /etc/trove/trove-guestagent.conf DEFAULT log_file guestagent.log
+
+case $brokerflavor in
+"qpid")
+	crudini --set /etc/trove/trove-guestagent.conf DEFAULT rpc_backend trove.openstack.common.rpc.impl_qpid
+	crudini --del /etc/trove/trove-guestagent.conf DEFAULT rabbit_password
+	crudini --set /etc/trove/trove-guestagent.conf DEFAULT qpid_hostname $messagebrokerhost
+	crudini --set /etc/trove/trove-guestagent.conf DEFAULT qpid_port 5672
+	crudini --set /etc/trove/trove-guestagent.conf DEFAULT qpid_username $brokeruser
+	crudini --set /etc/trove/trove-guestagent.conf DEFAULT qpid_password $brokerpass
+	crudini --set /etc/trove/trove-guestagent.conf DEFAULT qpid_heartbeat 60
+	crudini --set /etc/trove/trove-guestagent.conf DEFAULT qpid_protocol tcp
+	crudini --set /etc/trove/trove-guestagent.conf DEFAULT qpid_tcp_nodelay True
+	crudini --set /etc/trove/trove-guestagent.conf oslo_messaging_qpid qpid_hostname $messagebrokerhost
+	crudini --set /etc/trove/trove-guestagent.conf oslo_messaging_qpid qpid_port 5672
+	crudini --set /etc/trove/trove-guestagent.conf oslo_messaging_qpid qpid_username $brokeruser
+	crudini --set /etc/trove/trove-guestagent.conf oslo_messaging_qpid qpid_password $brokerpass
+	crudini --set /etc/trove/trove-guestagent.conf oslo_messaging_qpid qpid_heartbeat 60
+	crudini --set /etc/trove/trove-guestagent.conf oslo_messaging_qpid qpid_protocol tcp
+	crudini --set /etc/trove/trove-guestagent.conf oslo_messaging_qpid qpid_tcp_nodelay True
+	;;
+"rabbitmq")
+	crudini --set /etc/trove/trove-guestagent.conf DEFAULT rpc_backend trove.openstack.common.rpc.impl_kombu
+	crudini --set /etc/trove/trove-guestagent.conf DEFAULT rabbit_password $brokerpass
+	crudini --set /etc/trove/trove-guestagent.conf DEFAULT rabbit_host $messagebrokerhost
+	crudini --set /etc/trove/trove-guestagent.conf DEFAULT rabbit_userid $brokeruser
+	crudini --set /etc/trove/trove-guestagent.conf DEFAULT rabbit_port 5672
+	crudini --set /etc/trove/trove-guestagent.conf DEFAULT rabbit_use_ssl false
+	crudini --set /etc/trove/trove-guestagent.conf DEFAULT rabbit_virtual_host $brokervhost
+	crudini --set /etc/trove/trove-guestagent.conf oslo_messaging_rabbit rabbit_host $messagebrokerhost
+	crudini --set /etc/trove/trove-guestagent.conf oslo_messaging_rabbit rabbit_password $brokerpass
+	crudini --set /etc/trove/trove-guestagent.conf oslo_messaging_rabbit rabbit_userid $brokeruser
+	crudini --set /etc/trove/trove-guestagent.conf oslo_messaging_rabbit rabbit_port 5672
+	crudini --set /etc/trove/trove-guestagent.conf oslo_messaging_rabbit rabbit_use_ssl false
+	crudini --set /etc/trove/trove-guestagent.conf oslo_messaging_rabbit rabbit_virtual_host $brokervhost
+	crudini --set /etc/trove/trove-guestagent.conf oslo_messaging_rabbit rabbit_max_retries 0
+	crudini --set /etc/trove/trove-guestagent.conf oslo_messaging_rabbit rabbit_retry_interval 1
+	crudini --set /etc/trove/trove-guestagent.conf oslo_messaging_rabbit rabbit_ha_queues false
+	;;
+esac
+
+case $trovedefaultds in
+mysql)
+	crudini --set /etc/trove/trove-guestagent.conf DEFAULT datastore_manager mysql
+	crudini --set /etc/trove/trove-guestagent.conf DEFAULT datastore_registry_ext "mysql:trove.guestagent.datastore.mysql.manager.Manager"
+	;;
+percona)
+	crudini --set /etc/trove/trove-guestagent.conf DEFAULT datastore_manager percona
+	crudini --set /etc/trove/trove-guestagent.conf DEFAULT datastore_registry_ext "percona:trove.guestagent.datastore.mysql.manager.Manager"
+	;;
+*)
+	crudini --set /etc/trove/trove-guestagent.conf DEFAULT datastore_manager $trovedefaultds
+	crudini --set /etc/trove/trove-guestagent.conf DEFAULT datastore_registry_ext "$trovedefaultds:trove.guestagent.datastore.experimental.$trovedefaultds.manager.Manager"
+	;;
+esac
+
 
 echo ""
 echo "Trove Installed and Configured"

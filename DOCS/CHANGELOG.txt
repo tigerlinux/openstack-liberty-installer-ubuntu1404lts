@@ -1,3 +1,14 @@
+1.0.3.ub1404lts - February 16, 2016
+
+- Extensive rework of trove installation module. New
+  config options for trove in main config file, and
+  new procedure included to make a "sample" trove guest
+  agent config file in order to make easier for the
+  cloud admin to create the glance trove images.
+- Minor corrections in Ceilometer install module.
+- Added missing config items in Neutron regarding
+  notifications.
+
 1.0.2.ub1404lts - February 10, 2016
 
 - BUG corrected in cinder module. We had an

@@ -5,8 +5,8 @@
 # E-Mail: TigerLinux@Gmail.com
 #
 # Main Configuration
-# Version: 1.0.2.ub1404lts "Nuclear Lynx"
-# February 10, 2016
+# Version: 1.0.3.ub1404lts "Nuclear Lynx"
+# February 16, 2016
 #
 
 #
@@ -620,11 +620,30 @@ troveuser="trove"
 trovesvce="trove"
 trovepass="P@ssw0rd"
 troveemail="trove@localhost"
+# If you want to use CINDER as Database storage backend, set the following variable to "yes".
+# Also, ensure the proper volume device (our default is vdc, considering a normal instance
+# with vda as primary disk and vdb as swap disk. If you are using instances with extra
+# ephemeral disk, set trovevoldevice to vdd.
+trovevolsupport="no"
+trovevoldevice="vdc"
+# Trove default DataStore - Normally, mysql. Se trove documentation for other options, as trove
+# support many database engines:
+trovedefaultds="mysql"
+#
 # Only if you are using MySQL as DB backend. If for any chance, you have multiple
 # trove hosts, put here the IP address of the extra hosts, space separated.
 # Normally, this is not necessary unless your mysql service access policies are very
 # strict.
 extratrovehosts=""
+#
+# IMPORTANT NOTE:
+# To make your life easier, this installer creates a sample trove-guestagent config file
+# already prepared to work with your OpenStack environment. You'll find this at:
+# /etc/trove/trove-guestagent.conf
+# Use this config file in your trove datastore-related glance images !!. The file is prepared
+# wot work with your default datastore (see "trovedefaultds" variable above) but you can adapt
+# it to other datastores.
+#
 
 
 

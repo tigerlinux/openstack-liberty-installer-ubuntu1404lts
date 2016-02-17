@@ -161,10 +161,11 @@ echo ""
 # Using python based tools, we proceed to configure ceilometer
 #
 
+#
+crudini --set /etc/ceilometer/ceilometer.conf keystone_authtoken admin_tenant_name $keystoneservicestenant
+crudini --set /etc/ceilometer/ceilometer.conf keystone_authtoken admin_user $ceilometeruser
+crudini --set /etc/ceilometer/ceilometer.conf keystone_authtoken admin_password $ceilometerpass
 # Deprecated !
-#crudini --set /etc/ceilometer/ceilometer.conf keystone_authtoken admin_tenant_name $keystoneservicestenant
-#crudini --set /etc/ceilometer/ceilometer.conf keystone_authtoken admin_user $ceilometeruser
-#crudini --set /etc/ceilometer/ceilometer.conf keystone_authtoken admin_password $ceilometerpass
 #crudini --set /etc/ceilometer/ceilometer.conf keystone_authtoken auth_uri http://$keystonehost:5000/v2.0
 #crudini --set /etc/ceilometer/ceilometer.conf keystone_authtoken identity_uri http://$keystonehost:35357
 
