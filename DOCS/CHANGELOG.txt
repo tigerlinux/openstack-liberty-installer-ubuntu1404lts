@@ -1,3 +1,11 @@
+1.0.4.ub1404lts - February 18, 2016
+
+- Minor correction in trove install module. The
+  guest-agent config file was not property of the
+  trove user.
+- Added more notes regarding trove in the main
+  Readme.
+
 1.0.3.ub1404lts - February 16, 2016
 
 - Extensive rework of trove installation module. New

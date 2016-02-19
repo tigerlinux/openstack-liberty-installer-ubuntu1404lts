@@ -192,7 +192,30 @@ Through a configurable option in the installer configuration file (consoleflavor
 
 ### Trove
 
-If you choose to install trove, this installation tool will install and configure all the software needed, but IT WILL NOT configure trove-ready images. That's part of your tasks as a Cloud Administrator.
+If you choose to install trove, this installation tool will install and configure all the software needed, but IT WILL NOT configure trove-ready images. That's part of your tasks as a Cloud Administrator. Please follow recomendations from the community regarding proper-configured glance
+images for trove. The "very big secret" of proper trove deployment is the glance-image. Fail to do that properlly, and forget about trove working
+the way it should.
+
+Tips for a properlly working trove image:
+
+- Cloud init must be installed on the image and configured for start at boot time. Please eliminate "mounts" from /etc/cloud/cloud.cfg or your vm
+  will try to auto-mount the ephemeral disk. This can interfere with trove guest agent activities.
+- The trove guest agent MUST BE installed and configured in the image. Also, give sudo root-powers to the "trove" account on the glance image. The
+  guest agent perform some changes in the vm that requires root access. The trove guest agent (if installed from ubuntu/centos repositories) uses
+  a "trove" account to run.
+- Install the database engine software in the glance image too. Trove guest agent can do this for you in many ways too.
+- TRICK: You can install the guest agent, configure it, create the "sudo" permissions, and install the database software vía Cloud init. You just
+  need to create a file /etc/trove/cloudinit/DATASTORE-NAME.cloudinit (sample: /etc/trove/cloudinit/mysql.cloudinit) with the commands needed to
+  do everything. This file can be any script-based languaje (sh, bash, etc.).
+- Flavors: If you plan to use locally-based storage for trove (instead of cinder-based), remember to choose a flavor for your database services
+  that contains an ephemeral disk. Trove requires an extra disk for the database.
+
+PLEASE READ THIS: Our installer creates a guest-agent file for trove. This file is in the trove directory: /etc/trove/trove-guestagent.conf. The
+file is configured with the default datastore choosen by "you" (normally: mysql). Trove injects this file in the guest's vm's every time you
+provision a new database service. If you are planning to have multiple datastores (mysql, postgresql, redis, mongo, etc.), please remove this
+file from /etc/trove directory or your guests agents will not work properlly. We asume you know how to create glance-images for trove and the
+importance of a properlly configured guest agent for every datastore-image. If that's not the case, please read trove documentation on openstack
+official sites before proceding with trove.
 
 
 ### Support Scripts installed with this solution

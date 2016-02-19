@@ -340,7 +340,7 @@ mkdir -p /var/cache/trove
 mkdir -p /etc/trove/cloudinit
 mkdir -p /etc/trove/templates
 chown -R trove.trove /var/cache/trove
-chown trove.trove /etc/trove/*
+chown -R trove.trove /etc/trove/*
 chmod 700 /var/cache/trove
 chmod 700 /var/log/trove
 
@@ -489,6 +489,7 @@ percona)
 	;;
 esac
 
+chown trove.trove /etc/trove/trove-guestagent.conf
 
 echo ""
 echo "Trove Installed and Configured"
