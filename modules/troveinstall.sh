@@ -474,20 +474,20 @@ case $brokerflavor in
 	;;
 esac
 
-case $trovedefaultds in
-mysql)
-	crudini --set /etc/trove/trove-guestagent.conf DEFAULT datastore_manager mysql
-	crudini --set /etc/trove/trove-guestagent.conf DEFAULT datastore_registry_ext "mysql:trove.guestagent.datastore.mysql.manager.Manager"
-	;;
-percona)
-	crudini --set /etc/trove/trove-guestagent.conf DEFAULT datastore_manager percona
-	crudini --set /etc/trove/trove-guestagent.conf DEFAULT datastore_registry_ext "percona:trove.guestagent.datastore.mysql.manager.Manager"
-	;;
-*)
-	crudini --set /etc/trove/trove-guestagent.conf DEFAULT datastore_manager $trovedefaultds
-	crudini --set /etc/trove/trove-guestagent.conf DEFAULT datastore_registry_ext "$trovedefaultds:trove.guestagent.datastore.experimental.$trovedefaultds.manager.Manager"
-	;;
-esac
+#case $trovedefaultds in
+#mysql)
+#	crudini --set /etc/trove/trove-guestagent.conf DEFAULT datastore_manager mysql
+#	crudini --set /etc/trove/trove-guestagent.conf DEFAULT datastore_registry_ext "mysql:trove.guestagent.datastore.mysql.manager.Manager"
+#	;;
+#percona)
+#	crudini --set /etc/trove/trove-guestagent.conf DEFAULT datastore_manager percona
+#	crudini --set /etc/trove/trove-guestagent.conf DEFAULT datastore_registry_ext "percona:trove.guestagent.datastore.mysql.manager.Manager"
+#	;;
+#*)
+#	crudini --set /etc/trove/trove-guestagent.conf DEFAULT datastore_manager $trovedefaultds
+#	crudini --set /etc/trove/trove-guestagent.conf DEFAULT datastore_registry_ext "$trovedefaultds:trove.guestagent.datastore.experimental.$trovedefaultds.manager.Manager"
+#	;;
+#esac
 
 chown trove.trove /etc/trove/trove-guestagent.conf
 

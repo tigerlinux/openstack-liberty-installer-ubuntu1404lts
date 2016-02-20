@@ -210,13 +210,6 @@ Tips for a properlly working trove image:
 - Flavors: If you plan to use locally-based storage for trove (instead of cinder-based), remember to choose a flavor for your database services
   that contains an ephemeral disk. Trove requires an extra disk for the database.
 
-PLEASE READ THIS: Our installer creates a guest-agent file for trove. This file is in the trove directory: /etc/trove/trove-guestagent.conf. The
-file is configured with the default datastore choosen by "you" (normally: mysql). Trove injects this file in the guest's vm's every time you
-provision a new database service. If you are planning to have multiple datastores (mysql, postgresql, redis, mongo, etc.), please remove this
-file from /etc/trove directory or your guests agents will not work properlly. We asume you know how to create glance-images for trove and the
-importance of a properlly configured guest agent for every datastore-image. If that's not the case, please read trove documentation on openstack
-official sites before proceding with trove.
-
 
 ### Support Scripts installed with this solution
 
