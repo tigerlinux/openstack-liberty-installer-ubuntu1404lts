@@ -435,6 +435,19 @@ crudini --set /etc/trove/trove-guestagent.conf DEFAULT trove_auth_url http://$ke
 crudini --set /etc/trove/trove-guestagent.conf DEFAULT log_dir "/var/log/trove/"
 crudini --set /etc/trove/trove-guestagent.conf DEFAULT log_file guestagent.log
 
+crudini --set /etc/trove/trove-guestagent.conf DEFAULT os_region_name $endpointsregion
+crudini --set /etc/trove/trove-guestagent.conf DEFAULT swift_service_type object-store
+crudini --set /etc/trove/trove-guestagent.conf DEFAULT storage_strategy SwiftStorage
+crudini --set /etc/trove/trove-guestagent.conf DEFAULT storage_namespace trove.guestagent.strategies.storage.swift
+crudini --set /etc/trove/trove-guestagent.conf DEFAULT backup_swift_container database_backups
+crudini --set /etc/trove/trove-guestagent.conf DEFAULT backup_use_gzip_compression True
+crudini --set /etc/trove/trove-guestagent.conf DEFAULT backup_use_openssl_encryption True
+crudini --set /etc/trove/trove-guestagent.conf DEFAULT backup_aes_cbc_key \"default_aes_cbc_key\"
+crudini --set /etc/trove/trove-guestagent.conf DEFAULT backup_use_snet False
+crudini --set /etc/trove/trove-guestagent.conf DEFAULT backup_chunk_size 65536
+crudini --set /etc/trove/trove-guestagent.conf DEFAULT backup_segment_max_size 2147483648
+
+
 case $brokerflavor in
 "qpid")
 	crudini --set /etc/trove/trove-guestagent.conf DEFAULT rpc_backend trove.openstack.common.rpc.impl_qpid

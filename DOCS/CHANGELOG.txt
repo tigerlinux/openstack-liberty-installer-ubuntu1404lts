@@ -1,3 +1,8 @@
+1.0.7.ub1404lts - February 27, 2016
+
+- Extra changes on trove install module regarding
+  keystone region and swift access
+
 1.0.6.ub1404lts - February 21, 2016
 
 - BUG corrected in heat install module regarding
