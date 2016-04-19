@@ -183,6 +183,12 @@ case $brokerflavor in
         ;;
 esac
 
+if [ $ceilometerinstall == "yes" ]
+then
+	crudini --set /etc/sahara/sahara.conf DEFAULT enable_notifications true
+	crudini --set /etc/sahara/sahara.conf oslo_messaging_notifications driver messagingv2
+fi
+
 mkdir -p /var/log/sahara
 echo "" > /var/log/sahara/sahara.log
 chown -R sahara.sahara /var/log/sahara /etc/sahara

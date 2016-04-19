@@ -183,6 +183,7 @@ then
 			ceilometer-agent-central
 			ceilometer-api
 			ceilometer-collector
+			ceilometer-polling
 			$alarm1
 			$alarm2
 			$alarm3
@@ -195,6 +196,7 @@ then
 			ceilometer-agent-central
 			ceilometer-api
 			ceilometer-collector
+			ceilometer-polling
 			$alarm1
 			$alarm2
 			$alarm3

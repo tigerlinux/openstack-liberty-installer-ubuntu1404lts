@@ -144,6 +144,8 @@ if [ $ceilometerinstall == "yes" ]
 then
 	crudini --set /etc/glance/glance-api.conf DEFAULT notification_driver messagingv2
 	crudini --set /etc/glance/glance-registry.conf DEFAULT notification_driver messagingv2
+        crudini --set /etc/glance/glance-api.conf oslo_messaging_notifications driver messagingv2
+        crudini --set /etc/glance/glance-registry.conf oslo_messaging_notifications driver messagingv2	
 fi
 
 case $brokerflavor in

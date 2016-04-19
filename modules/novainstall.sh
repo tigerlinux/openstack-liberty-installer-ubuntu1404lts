@@ -196,6 +196,7 @@ then
 	crudini --set /etc/nova/nova.conf DEFAULT instance_usage_audit True
 	crudini --set /etc/nova/nova.conf DEFAULT instance_usage_audit_period hour
 	crudini --set /etc/nova/nova.conf DEFAULT notify_on_state_change vm_and_task_state
+	crudini --set /etc/nova/nova.conf oslo_messaging_notifications driver messagingv2
 fi
 
 #

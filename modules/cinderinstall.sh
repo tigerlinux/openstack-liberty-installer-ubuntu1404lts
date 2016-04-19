@@ -264,6 +264,7 @@ if [ $ceilometerinstall == "yes" ]
 then
 	crudini --set /etc/cinder/cinder.conf DEFAULT notification_driver messagingv2
 	crudini --set /etc/cinder/cinder.conf DEFAULT control_exchange cinder
+	crudini --set /etc/cinder/cinder.conf oslo_messaging_notifications driver messagingv2
 fi
 
 rm -f /var/lib/cinder/cinder.sqlite

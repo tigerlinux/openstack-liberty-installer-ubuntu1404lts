@@ -113,17 +113,19 @@ then
  
 	DEBIAN_FRONTEND=noninteractive aptitude -y install ceilometer-agent-central ceilometer-agent-compute ceilometer-api \
         	ceilometer-collector ceilometer-common python-ceilometer python-ceilometerclient \
-	        libnspr4 libnspr4-dev python-libxslt1 python-ceilometermiddleware
+	        libnspr4 libnspr4-dev python-libxslt1 python-ceilometermiddleware ceilometer-polling
 
 	if [ $ceilometeralarms == "yes" ]
 	then
-        	DEBIAN_FRONTEND=noninteractive aptitude -y install ceilometer-alarm-evaluator ceilometer-alarm-notifier ceilometer-agent-notification
+        	DEBIAN_FRONTEND=noninteractive aptitude -y install ceilometer-alarm-evaluator ceilometer-alarm-notifier \
+			ceilometer-agent-notification
 	fi
 else
 	echo ""
 	echo "Packages for Compute Node"
 	echo ""
-	DEBIAN_FRONTEND=noninteractive aptitude -y install ceilometer-agent-compute libnspr4 libnspr4-dev python-libxslt1
+	DEBIAN_FRONTEND=noninteractive aptitude -y install ceilometer-agent-compute libnspr4 libnspr4-dev python-libxslt1 \
+		ceilometer-polling
 fi
 
 #
@@ -139,6 +141,7 @@ then
 	stop ceilometer-agent-compute
 	stop ceilometer-api
 	stop ceilometer-collector
+	stop ceilometer-polling
 
  
 	if [ $ceilometeralarms == "yes" ]
@@ -149,6 +152,7 @@ then
 	fi
 else
 	stop ceilometer-agent-compute
+	stop ceilometer-polling
 fi
 
 source $keystone_admin_rc_file
@@ -177,8 +181,11 @@ crudini --set /etc/ceilometer/ceilometer.conf keystone_authtoken password $ceilo
 crudini --set /etc/ceilometer/ceilometer.conf keystone_authtoken project_domain_id $keystonedomain
 crudini --set /etc/ceilometer/ceilometer.conf keystone_authtoken user_domain_id $keystonedomain
 crudini --set /etc/ceilometer/ceilometer.conf keystone_authtoken project_name $keystoneservicestenant
-crudini --set /etc/ceilometer/ceilometer.conf keystone_authtoken auth_uri http://$keystonehost:5000/v2.0
+# crudini --set /etc/ceilometer/ceilometer.conf keystone_authtoken auth_uri http://$keystonehost:5000/v2.0
+crudini --set /etc/ceilometer/ceilometer.conf keystone_authtoken auth_uri http://$keystonehost:5000
 crudini --set /etc/ceilometer/ceilometer.conf keystone_authtoken auth_url http://$keystonehost:35357
+crudini --set /etc/ceilometer/ceilometer.conf keystone_authtoken signing_dir "/tmp/ceilometer-signing-heat"
+crudini --set /etc/ceilometer/ceilometer.conf keystone_authtoken auth_version v3
 
 
 # Deprecated !
@@ -193,7 +200,8 @@ crudini --set /etc/ceilometer/ceilometer.conf service_credentials os_password $c
 crudini --set /etc/ceilometer/ceilometer.conf service_credentials os_tenant_name $keystoneservicestenant
 crudini --set /etc/ceilometer/ceilometer.conf service_credentials os_auth_url http://$keystonehost:5000/v2.0
 crudini --set /etc/ceilometer/ceilometer.conf service_credentials os_region_name $endpointsregion
-crudini --set /etc/ceilometer/ceilometer.conf service_credentials os_endpoint_type internalURL
+# crudini --set /etc/ceilometer/ceilometer.conf service_credentials os_endpoint_type internalURL
+crudini --set /etc/ceilometer/ceilometer.conf service_credentials os_endpoint_type publicURL
  
 crudini --set /etc/ceilometer/ceilometer.conf DEFAULT metering_api_port 8777
 crudini --set /etc/ceilometer/ceilometer.conf DEFAULT auth_strategy keystone
@@ -230,7 +238,8 @@ crudini --set /etc/ceilometer/ceilometer.conf database metering_time_to_live $mo
 crudini --set /etc/ceilometer/ceilometer.conf database time_to_live $mongodbttl
 # Deprecated
 # crudini --set /etc/ceilometer/ceilometer.conf rpc_notifier2 topics notifications,glance_notifications
-crudini --set /etc/ceilometer/ceilometer.conf DEFAULT notification_topics notifications,glance_notifications
+# crudini --set /etc/ceilometer/ceilometer.conf DEFAULT notification_topics notifications,glance_notifications
+crudini --set /etc/ceilometer/ceilometer.conf DEFAULT notification_topics notifications
 # crudini --set /etc/ceilometer/ceilometer.conf DEFAULT policy_file policy.json
 # crudini --set /etc/ceilometer/ceilometer.conf DEFAULT policy_default_rule default
 crudini --set /etc/ceilometer/ceilometer.conf DEFAULT dispatcher database
@@ -272,8 +281,8 @@ crudini --set /etc/ceilometer/ceilometer.conf api host 0.0.0.0
 crudini --set /etc/ceilometer/ceilometer.conf DEFAULT heat_control_exchange heat
 crudini --set /etc/ceilometer/ceilometer.conf DEFAULT control_exchange ceilometer
 crudini --set /etc/ceilometer/ceilometer.conf DEFAULT http_control_exchanges nova
-sed -r -i 's/http_control_exchanges\ =\ nova/http_control_exchanges=nova\nhttp_control_exchanges=glance\nhttp_control_exchanges=cinder\nhttp_control_exchanges=neutron\n/' /etc/ceilometer/ceilometer.conf
-crudini --set /etc/ceilometer/ceilometer.conf publisher_rpc metering_topic metering
+sed -r -i 's/http_control_exchanges\ =\ nova/http_control_exchanges\ =\nova\nhttp_control_exchanges\ =\ glance\nhttp_control_exchanges\ =\ cinder\nhttp_control_exchanges\ =\ neutron\n/' /etc/ceilometer/ceilometer.conf
+# crudini --set /etc/ceilometer/ceilometer.conf publisher_rpc metering_topic metering
 
 crudini --set /etc/ceilometer/ceilometer.conf DEFAULT instance_name_template $instance_name_template
 crudini --set /etc/ceilometer/ceilometer.conf service_types neutron network
@@ -281,6 +290,23 @@ crudini --set /etc/ceilometer/ceilometer.conf service_types nova compute
 crudini --set /etc/ceilometer/ceilometer.conf service_types swift object-store
 crudini --set /etc/ceilometer/ceilometer.conf service_types glance image
 crudini --del /etc/ceilometer/ceilometer.conf service_types kwapi
+
+# April 19, 2016
+crudini --set /etc/ceilometer/ceilometer.conf oslo_messaging_notifications topic notifications
+crudini --set /etc/ceilometer/ceilometer.conf exchange_control heat_control_exchange heat
+crudini --set /etc/ceilometer/ceilometer.conf exchange_control glance_control_exchange glance
+crudini --set /etc/ceilometer/ceilometer.conf exchange_control keystone_control_exchange keystone
+crudini --set /etc/ceilometer/ceilometer.conf exchange_control cinder_control_exchange cinder
+crudini --set /etc/ceilometer/ceilometer.conf exchange_control sahara_control_exchange sahara
+crudini --set /etc/ceilometer/ceilometer.conf exchange_control swift_control_exchange swift
+crudini --set /etc/ceilometer/ceilometer.conf exchange_control magnum_control_exchange magnum
+crudini --set /etc/ceilometer/ceilometer.conf exchange_control trove_control_exchange trove
+crudini --set /etc/ceilometer/ceilometer.conf exchange_control nova_control_exchange nova
+crudini --set /etc/ceilometer/ceilometer.conf exchange_control neutron_control_exchange neutron
+crudini --set /etc/ceilometer/ceilometer.conf publisher_notifier telemetry_driver messagingv2
+crudini --set /etc/ceilometer/ceilometer.conf publisher_notifier metering_topic metering
+crudini --set /etc/ceilometer/ceilometer.conf publisher_notifier event_topic event
+# End April 19, 2016 changes
 
 #
 # If this is NOT a compute node, and we are installing swift, then we reconfigure it
@@ -329,6 +355,13 @@ usermod -G libvirt-qemu ceilometer > /dev/null 2>&1
 usermod -G libvirt-kvm ceilometer > /dev/null 2>&1
 
 usermod -G libvirtd,nova ceilometer > /dev/null 2>&1
+
+if [ $ceilometer_in_compute_node == "no" ]
+then
+        ceilometer-dbsync --config-dir /etc/ceilometer/
+fi
+
+chown ceilometer.ceilometer /var/log/ceilometer/*
 
 #
 # With all configuration done, we proceed to make IPTABLES changes and start ceilometer services
@@ -379,6 +412,7 @@ then
 	start ceilometer-agent-central
 	start ceilometer-api
 	start ceilometer-collector
+	start ceilometer-polling
  
 	if [ $ceilometeralarms == "yes" ]
 	then
@@ -394,6 +428,7 @@ then
 else
 	start ceilometer-agent-compute
 	rm -f /etc/init/ceilometer-agent-compute.override
+	start ceilometer-polling
 	restart ceilometer-agent-compute
 fi
 

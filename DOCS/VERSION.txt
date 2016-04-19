@@ -1,5 +1,5 @@
 Installer Version:
 
-1.0.7.ub1404lts "Nuclear Lynx"
+1.0.8.ub1404lts "Nuclear Lynx"
 
 ONLY FOR OPENSTACK "LIBERTY"

@@ -1,3 +1,10 @@
+1.0.8.ub1404lts - April 19, 2016
+
+- Added and changed config items for ceilometer.
+- Added ceilometer polling service.
+- Added extra config items for cinder, nova, heat,
+  glance and sahara regarding ceilometer.
+
 1.0.7.ub1404lts - February 27, 2016
 
 - Extra changes on trove install module regarding
