@@ -5,8 +5,8 @@
 # E-Mail: TigerLinux@Gmail.com
 #
 # Main Installer Script
-# Version: 1.0.8.ub1404lts "Nuclear Lynx"
-# April 19, 2016
+# Version: 1.0.9.ub1404lts "Nuclear Lynx"
+# May 04, 2016
 #
 
 PATH=$PATH:/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
@@ -72,7 +72,7 @@ case $1 in
 	echo "Flavor: OpenStack LIBERTY for Ubuntu 14.04lts"
 	echo "Made by: Reynaldo R. Martinez P."
 	echo "E-Mail: TigerLinux@Gmail.com"
-	echo "Version 1.0.8.ub1404lts \"Nuclear Lynx\" - April 19, 2016"
+	echo "Version 1.0.9.ub1404lts \"Nuclear Lynx\" - May 04, 2016"
 	echo ""
 	echo "I'll verify all requiremens"
 	echo "If any requirement is not met, I'll stop and inform what's missing"

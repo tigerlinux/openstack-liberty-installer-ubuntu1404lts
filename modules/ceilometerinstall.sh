@@ -346,15 +346,7 @@ fi
 # Ceilometer User need to be part of nova and qemu/kvm/libvirt groups
 #
 
-usermod -G nova ceilometer > /dev/null 2>&1
-usermod -G qemu ceilometer > /dev/null 2>&1
-usermod -G kvm ceilometer > /dev/null 2>&1
-usermod -G libvirt ceilometer > /dev/null 2>&1
-usermod -G libvirtd ceilometer > /dev/null 2>&1
-usermod -G libvirt-qemu ceilometer > /dev/null 2>&1
-usermod -G libvirt-kvm ceilometer > /dev/null 2>&1
-
-usermod -G libvirtd,nova ceilometer > /dev/null 2>&1
+usermod -a -G libvirtd,nova,kvm ceilometer > /dev/null 2>&1
 
 if [ $ceilometer_in_compute_node == "no" ]
 then

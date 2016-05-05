@@ -1,3 +1,7 @@
+1.0.9.ub1404lts - May 04, 2016
+
+- Minor corrections on Ceilometer install module
+
 1.0.8.ub1404lts - April 19, 2016
 
 - Added and changed config items for ceilometer.
