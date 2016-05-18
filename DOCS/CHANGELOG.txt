@@ -1,3 +1,7 @@
+1.0.10.ub1404lts - May 17, 2016
+
+- Added missing config item in glance registry.
+
 1.0.9.ub1404lts - May 04, 2016
 
 - Minor corrections on Ceilometer install module
