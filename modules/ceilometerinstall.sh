@@ -281,7 +281,7 @@ crudini --set /etc/ceilometer/ceilometer.conf api host 0.0.0.0
 crudini --set /etc/ceilometer/ceilometer.conf DEFAULT heat_control_exchange heat
 crudini --set /etc/ceilometer/ceilometer.conf DEFAULT control_exchange ceilometer
 crudini --set /etc/ceilometer/ceilometer.conf DEFAULT http_control_exchanges nova
-sed -r -i 's/http_control_exchanges\ =\ nova/http_control_exchanges\ =\nova\nhttp_control_exchanges\ =\ glance\nhttp_control_exchanges\ =\ cinder\nhttp_control_exchanges\ =\ neutron\n/' /etc/ceilometer/ceilometer.conf
+sed -r -i 's/http_control_exchanges\ =\ nova/http_control_exchanges\ =\ nova\nhttp_control_exchanges\ =\ glance\nhttp_control_exchanges\ =\ cinder\nhttp_control_exchanges\ =\ neutron\n/' /etc/ceilometer/ceilometer.conf
 # crudini --set /etc/ceilometer/ceilometer.conf publisher_rpc metering_topic metering
 
 crudini --set /etc/ceilometer/ceilometer.conf DEFAULT instance_name_template $instance_name_template
